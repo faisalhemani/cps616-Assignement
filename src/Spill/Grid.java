@@ -1,5 +1,6 @@
 package Spill;
 import java.util.Random;
+import java.util.ArrayDeque;
 import java.util.Scanner;
 
 /**
@@ -24,7 +25,7 @@ public class Grid {
      * actual grid
      */
     Cell grid[][];
-
+    ArrayDeque<Cell> queue = new ArrayDeque<>();
     /**
      * Returns a new Grid with specified rows and columns of EMPTY cells
      * <br>Note: there is no error checking of parameters
@@ -213,20 +214,34 @@ public class Grid {
      */
  
     public void Spill (int row, int col, int strength) {
-    	if (strength == 0) return;
-		if (col<0 || col>=columns || row<0 || row >= rows) return;
-		Cell cell = getCell(row,col);
-		if (isObstacle(row,col)) return;
-		if (cell.getValue() < strength) setCell(row,col,strength);
-		Spill(row-1,col-1,strength-1);
-		Spill(row-1,col,strength-1);
-		Spill(row-1,col+1,strength-1);
-		Spill(row,col-1,strength-1);
-		Spill(row,col+1,strength-1);
-		Spill(row+1,col-1,strength-1);
-		Spill(row+1,col,strength-1);
-		Spill(row+1,col+1,strength-1);
+    	SpillInCell(row,col,strength);
+    	while (!queue.isEmpty()){
+    		Cell temp = queue.pop();
+    		strength = temp.getValue();
+    		Spill(row-1,col-1,strength-1);
+    		Spill(row-1,col,strength-1);
+    		Spill(row-1,col+1,strength-1);
+    		Spill(row,col-1,strength-1);
+    		Spill(row,col+1,strength-1);
+    		Spill(row+1,col-1,strength-1);
+    		Spill(row+1,col,strength-1);
+    		Spill(row+1,col+1,strength-1);
+    	}
+		
         }
 
+    public void SpillInCell(int row, int col, int strength){
+    	if (strength == 0) 
+    		return;
+		if (col<0 || col>=columns || row<0 || row >= rows) 
+			return;
+		Cell cell = getCell(row,col);
+		if (isObstacle(row,col)) 
+			return;
+		if (cell.getValue() >= strength) 
+			return;
+		setCell(row,col,strength);
+		queue.push(cell);
+    }
 
 }

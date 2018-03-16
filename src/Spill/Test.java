@@ -60,12 +60,12 @@ public class Test {
         for (int size=first; size<=last; size += increment) {
         	Grid surface = new Grid(2*size-1,2*size-1);
             System.out.println("Spill of strength "+ (2*size-1) +" at ("+ (size-1) +","+ (size-1) +") on a grid of size: "+(2*size-1) +" x "+ (2*size-1) );
-            System.out.println(surface);
+            //System.out.println(surface);
             System.out.println("---------------------------------------------------------------------------------------------------------------------");
             System.out.println("Start!");
             long startTime = System.nanoTime();
             surface.Spill(size-1,size-1,size);
-            System.out.println(surface);
+            //System.out.println(surface);
             long estimatedTime = System.nanoTime() - startTime;
             System.out.println("END!");
             System.out.println("Total Time: "+estimatedTime+" nanoseconds.");
