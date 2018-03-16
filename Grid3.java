@@ -1,8 +1,8 @@
 package Spill;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.ArrayDeque;
 
-import Spill.Cell;
 
 /**
   * A Grid is a 2-dimensional array of Cells representing a surface 
@@ -26,6 +26,8 @@ public class Grid {
      * actual grid
      */
     Cell grid[][];
+    
+    ArrayDeque<Cell> queue = new ArrayDeque<>();
 
     /**
      * Returns a new Grid with specified rows and columns of EMPTY cells
@@ -75,8 +77,15 @@ public class Grid {
         for (int i=0; i<rows; i++) {
             String line = in.nextLine();
             for (int j=0; j<columns; j++) {
+            	try
+            	{
                 if (line.charAt(j) == 'X')
                     grid[i][j].putObstacle();
+            	}
+            	catch(IndexOutOfBoundsException e)
+            	{
+            		System.err.println("IndexOutOfBoundsException: " + e.getMessage());
+            	}
             }
         }
     }
@@ -215,20 +224,34 @@ public class Grid {
      */
  
     public void Spill (int row, int col, int strength) {
-		if (strength == 0) return;
-		if (col<0 || col>=columns || row<0 || row >= rows) return;
-		int cell = getCell(row,col);
-		if (isObstacle(row,col)) return;
-		if (cell.getValue() < strength) setCell(row,col,strength);
-		spill(row-1,col-1,strength-1);
-		spill(row-1,col,strength-1);
-		spill(row-1,col+1,strength-1);
-		spill(row,col-1,strength-1);
-		spill(row,col+1,strength-1);
-		spill(row+1,col-1,strength-1);
-		spill(row+1,col,strength-1);
-		spill(row+1,col+1,strength-1);
+    	SpillInCell(row,col,strength);
+    	while (!queue.isEmpty()){
+    		Cell temp = queue.pop();
+    		strength = temp.getValue();
+    		Spill(row-1,col-1,strength-1);
+    		Spill(row-1,col,strength-1);
+    		Spill(row-1,col+1,strength-1);
+    		Spill(row,col-1,strength-1);
+    		Spill(row,col+1,strength-1);
+    		Spill(row+1,col-1,strength-1);
+    		Spill(row+1,col,strength-1);
+    		Spill(row+1,col+1,strength-1);
+    	}
+		
         }
 
-
+    public void SpillInCell(int row, int col, int strength){
+    	if (strength == 0) 
+    		return;
+		if (col<0 || col>=columns || row<0 || row >= rows) 
+			return;
+		Cell cell = getCell(row,col);
+		if (isObstacle(row,col)) 
+			return;
+		if (cell.getValue() >= strength) 
+			return;
+		setCell(row,col,strength);
+		queue.push(cell);
+    }
+    
 }
